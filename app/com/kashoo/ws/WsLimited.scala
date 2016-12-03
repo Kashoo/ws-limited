@@ -1,23 +1,22 @@
 package com.kashoo.ws
 
-import play.api.libs.ws.{WSRequest, WSResponse}
+import java.net.URI
 
-import scala.concurrent.Future
+import com.google.inject.{Inject, Singleton}
+import com.kashoo.ws.RequestRateLimits.RequestRateLimits
+import play.api.libs.ws.{WSAPI, WSClient, WSRequest}
 
-/**
-  * What do I need?
-  * - access to request matchers / rates pairs
-  * -
-  * - way to configure?
-  */
-trait WsLimitedRequest extends WSRequest {
+import scala.concurrent.ExecutionContext
 
-//  override def execute(): Future[WSResponse] = {
-//    // need to match this bitch against request matchers with installed rates
-//
-//    super.execute()
-//  }
+@Singleton
+class WsLimitedAdapter @Inject() (wsAPI: WSAPI, requestRateLimits: RequestRateLimits)(implicit ec: ExecutionContext) extends WSAPI {
 
+  override def client: WSClient = wsAPI.client
 
-
+  override def url(url: String): WSRequest = {
+    RequestRateLimits.matchRequest(new URI(url), requestRateLimits) match {
+      case Some(requestRateLimit) => WSLimitedRequestAdapter(client.url(url), requestRateLimit.rateLimit)
+      case None => client.url(url)
+    }
+  }
 }

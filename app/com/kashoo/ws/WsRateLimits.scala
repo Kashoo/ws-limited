@@ -3,9 +3,6 @@ package com.kashoo.ws
 import javax.inject.Inject
 
 import play.api.Configuration
-import play.api.libs.ws.{WSRequest, WSResponse}
-
-import scala.concurrent.Future
 
 /**
   * example config:
@@ -20,7 +17,7 @@ import scala.concurrent.Future
   *     period = 1 second
   *   }
   * }
-  * com.kashoo.ws.api-limits = [
+  * com.kashoo.ws.request-limits = [
   *  {
   *    rate = rate1
   *    host = "squareapi.com"

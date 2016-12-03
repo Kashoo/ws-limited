@@ -22,9 +22,8 @@ object Rate {
     def / (duration: Duration) = Rate(number, duration)
   }
 
-  def apply(config: Configuration, rateName: String): Rate = {
-    val rateConfig = config.getConfig("com.kashoo.ws.rates").getOrElse(throw new IllegalArgumentException("Rates config could not be found (under key 'com.kashoo.ws.rates')"))
-    val rateNameConfig = config.getConfig(rateName).getOrElse(throw new IllegalStateException(s"Could not find rate configuration for $rateName ( com.kashoo.ws.rates.$rateName )"))
+  def apply(rateConfig: Configuration, rateName: String): Rate = {
+    val rateNameConfig = rateConfig.getConfig(rateName).getOrElse(throw new IllegalStateException(s"Could not find rate configuration for $rateName ( com.kashoo.ws.rates.$rateName )"))
     val queries = rateNameConfig.getInt("queries").getOrElse(throw new IllegalStateException("Rate limit must define the number of queries"))
     val period = rateNameConfig.getString("period").getOrElse(throw new IllegalStateException("Rate limit must have a period"))
     Rate(queries, Duration(period))
@@ -32,13 +31,13 @@ object Rate {
 
 }
 
-case class RateLimit(rate: Rate) {
+case class RateLimit(rate: Rate)(implicit ec: ExecutionContext) {
   val limiter = RateLimiter.create(rate.number / (rate.period / 1.second))
 
   /**
     * Limits the provided function by a delay if necessary
     */
-  def limit[T](fn: => Future[T])(implicit ec: ExecutionContext) = {
+  def limit[T](fn: => Future[T]) = {
     Future {
       blocking {
         limiter.acquire()

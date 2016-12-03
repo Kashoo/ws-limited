@@ -12,17 +12,22 @@ class RequestMatcherSpec extends FlatSpec with Matchers {
   trait TestScope {
     val basicRate = 5 per 1.second
 
-    val mostSpecific = RequestMatcher(basicRate, "example.com", Some(9001), Some("some/path/with/several/segments"))
-    val nextSpecific = RequestMatcher(basicRate, "example.com", Some(9001), Some("some/path"))
-    val specificWithoutPort = RequestMatcher(basicRate, "example.com", None, Some("some/path/with/several/segments"))
-    val shorterPathSpecificWithoutPort = RequestMatcher(basicRate, "example.com", None, Some("some/path"))
-    val lessSpecific = RequestMatcher(basicRate, "example.com", Some(9001))
-    val leastSpecific = RequestMatcher(basicRate, "example.com")
+    val mostSpecific = RequestMatcher("example.com", Some(9001), Some("some/path/with/several/segments"))
+    val nextSpecific = RequestMatcher("example.com", Some(9001), Some("some/path"))
+    val specificWithoutPort = RequestMatcher("example.com", None, Some("some/path/with/several/segments"))
+    val shorterPathSpecificWithoutPort = RequestMatcher("example.com", None, Some("some/path"))
+    val lessSpecific = RequestMatcher("example.com", Some(9001))
+    val leastSpecific = RequestMatcher("example.com")
 
     val matchers = Set(leastSpecific, lessSpecific, nextSpecific, mostSpecific, specificWithoutPort, shorterPathSpecificWithoutPort)
 
-    def assertMatch(testUri: URI, expectedMatcher: RequestMatcher) =
-      RequestMatcher.matchRequest(testUri, matchers) shouldBe Some(expectedMatcher)
+    val requestRateLimits = matchers.map(RequestRateLimit(basicRate, _))
+
+    def assertMatch(testUri: URI, expectedMatcher: RequestMatcher) = {
+      val result = RequestRateLimits.matchRequest(testUri, requestRateLimits)
+      result shouldBe defined
+      result.get.requestMatcher shouldBe expectedMatcher
+    }
   }
 
   "RequestMatcher" should "match the most specific matcher for a URI with matching host, port, and all path segments" in new TestScope {
@@ -54,7 +59,7 @@ class RequestMatcherSpec extends FlatSpec with Matchers {
   }
 
   it should "not find a match for a mismatching URI" in new TestScope {
-    RequestMatcher.matchRequest(new URI("http://some-other-example.com/some/path"), matchers) shouldBe None
+    RequestRateLimits.matchRequest(new URI("http://some-other-example.com/some/path"), requestRateLimits) shouldBe None
   }
 
 }
