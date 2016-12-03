@@ -1,7 +1,5 @@
 package com.kashoo.ws
 
-import java.net.URI
-
 import play.api.Configuration
 
 /**
