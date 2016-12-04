@@ -9,7 +9,7 @@ import play.api.Configuration
 
 import scala.concurrent.duration._
 
-class RateSpec  extends FlatSpec with Matchers with MockitoSugar {
+class RateSpec extends FlatSpec with Matchers with MockitoSugar {
 
   trait TestScope {
     val mockRateConfig = mock[Configuration]

@@ -13,29 +13,29 @@ import scala.concurrent.Future
 case class WSLimitedRequestAdapter(wsRequest: WSRequest, rateLimit: RateLimit) extends WSRequest {
   override val url: String = wsRequest.url
 
-  override def withHeaders(hdrs: (String, String)*): WSRequestHolder = wsRequest.withHeaders(hdrs:_*)
+  override def withHeaders(hdrs: (String, String)*): WSRequestHolder =  WSLimitedRequestAdapter(wsRequest.withHeaders(hdrs:_*), rateLimit)
 
-  override def withAuth(username: String, password: String, scheme: WSAuthScheme): WSRequestHolder = wsRequest.withAuth(username, password, scheme)
+  override def withAuth(username: String, password: String, scheme: WSAuthScheme): WSRequestHolder =  WSLimitedRequestAdapter(wsRequest.withAuth(username, password, scheme), rateLimit)
 
-  override def withQueryString(parameters: (String, String)*): WSRequestHolder = wsRequest.withQueryString(parameters:_*)
+  override def withQueryString(parameters: (String, String)*): WSRequestHolder =  WSLimitedRequestAdapter(wsRequest.withQueryString(parameters:_*), rateLimit)
 
   override def execute(): Future[WSResponse] = rateLimit.limit(wsRequest.execute)
 
-  override def sign(calc: WSSignatureCalculator): WSRequestHolder = wsRequest.sign(calc)
+  override def sign(calc: WSSignatureCalculator): WSRequestHolder =  WSLimitedRequestAdapter(wsRequest.sign(calc), rateLimit)
 
   override def stream(): Future[(WSResponseHeaders, Enumerator[Array[Byte]])] = rateLimit.limit(wsRequest.stream)
 
-  override def withVirtualHost(vh: String): WSRequestHolder = wsRequest.withVirtualHost(vh)
+  override def withVirtualHost(vh: String): WSRequestHolder =  WSLimitedRequestAdapter(wsRequest.withVirtualHost(vh), rateLimit)
 
-  override def withMethod(method: String): WSRequestHolder = wsRequest.withMethod(method)
+  override def withMethod(method: String): WSRequestHolder = WSLimitedRequestAdapter(wsRequest.withMethod(method), rateLimit)
 
-  override def withRequestTimeout(timeout: Long): WSRequestHolder = wsRequest.withRequestTimeout(timeout)
+  override def withRequestTimeout(timeout: Long): WSRequestHolder =  WSLimitedRequestAdapter(wsRequest.withRequestTimeout(timeout), rateLimit)
 
-  override def withProxyServer(proxyServer: WSProxyServer): WSRequestHolder = wsRequest.withProxyServer(proxyServer)
+  override def withProxyServer(proxyServer: WSProxyServer): WSRequestHolder =  WSLimitedRequestAdapter(wsRequest.withProxyServer(proxyServer), rateLimit)
 
-  override def withFollowRedirects(follow: Boolean): WSRequestHolder = wsRequest.withFollowRedirects(follow)
+  override def withFollowRedirects(follow: Boolean): WSRequestHolder =  WSLimitedRequestAdapter(wsRequest.withFollowRedirects(follow), rateLimit)
 
-  override def withBody(body: WSBody): WSRequestHolder = wsRequest.withBody(body)
+  override def withBody(body: WSBody): WSRequestHolder =  WSLimitedRequestAdapter(wsRequest.withBody(body), rateLimit)
 
   override val calc: Option[WSSignatureCalculator] = wsRequest.calc
   override val queryString: Map[String, Seq[String]] = wsRequest.queryString
