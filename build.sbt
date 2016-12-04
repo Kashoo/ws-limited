@@ -1,4 +1,3 @@
-import _root_.scoverage.ScoverageSbtPlugin
 
 organization := "com.kashoo"
 

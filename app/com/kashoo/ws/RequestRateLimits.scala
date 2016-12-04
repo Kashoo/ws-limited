@@ -17,7 +17,7 @@ object RequestRateLimits {
   /**
     * Matches the most specific matcher given a set of RequestMatchers and a URI
     *
-    * @param uri      to match against
+    * @param uri    to match against
     * @param limits to match with
     * @return an optional request matcher match
     */
@@ -31,21 +31,21 @@ object RequestRateLimits {
   private type Matcher = (UriWrapper, RequestRateLimits) => Option[RequestRateLimit]
 
   /**
-    * Most specific matcher - matches on all fields.  When more than a single matcher are matched, the one with the longer path wins (more specific)
+    * Most specific matcher - matches on all fields.  When more than a single matcher are matched, the one with the longer (more specific) path wins
     */
-  private def matchAll: Matcher = (uri, matchers) => matchers.collect {
+  private def matchAll: Matcher = (uri, rateLimits) => rateLimits.collect {
     case rl if rl.requestMatcher.host == uri.getHost && rl.requestMatcher.port == uri.getPort && (rl.requestMatcher.path == uri.getPath || pathsMatch(uri.getPath, rl.requestMatcher.path)) => rl
   } match {
     case matches if matches.isEmpty => None
     case matches => Some(matches.maxBy(_.requestMatcher.path.get.length))
   }
 
-  private def matchHostAndPort: Matcher = (uri, matchers) => matchers find { _.requestMatcher match {
+  private def matchHostAndPort: Matcher = (uri, rateLimits) => rateLimits find { _.requestMatcher match {
     case RequestMatcher(host, port, None) if host == uri.getHost && port == uri.getPort => true
     case _ => false
   }}
 
-  private def matchHost: Matcher = (uri, matchers) => matchers find { _.requestMatcher match {
+  private def matchHost: Matcher = (uri, rateLimits) => rateLimits find { _.requestMatcher match {
     case RequestMatcher(host, None, None) if host == uri.getHost => true
     case _ => false
   }}
