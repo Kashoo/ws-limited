@@ -9,7 +9,7 @@ import play.api.{Configuration, Environment}
 class WSLimitedModule extends Module {
   def bindings(environment: Environment, configuration: Configuration) = {
     Seq(
-      bind[WSClient].toProvider[WSLimitedClientProvider].in[Singleton]
+      bind[WSClient].qualifiedWith(classOf[RateLimited]).toProvider[WSLimitedClientProvider].in[Singleton]
     )
   }
 }
