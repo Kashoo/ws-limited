@@ -1,0 +1,3 @@
+# A basic healthcheck endpoint
+GET     /limit-test                         @application.ExampleController.test
+GET     /unlimited                          @application.ExampleController.testNonLimited

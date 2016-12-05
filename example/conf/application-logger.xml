@@ -1,0 +1,17 @@
+<configuration>
+
+  <conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel" />
+
+  <!-- Appender configuration for each output stream -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%date [%coloredLevel] - %message%n%xException</pattern>
+    </encoder>
+  </appender>
+
+  <!-- Logger configuration -->
+  <logger name="limit-test" level="INFO">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
+</configuration>

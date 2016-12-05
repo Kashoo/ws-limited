@@ -6,3 +6,9 @@ target
 /.project
 /.settings
 /RUNNING_PID
+example/.idea
+example/.idea_modules
+example/.classpath
+example/.project
+example/target
+example/logs
