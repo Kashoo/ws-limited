@@ -55,3 +55,7 @@ When using the WSLimitedModule to provide WSClient dependencies, all provided cl
 - `ws.limited.rates` - This is expected to be an object/map containing rate names to defined rates.  Each defined rate must have both a `queries` and `period` attribute.  The period should be defined as a String but will be parsed as a [Duration](http://www.scala-lang.org/api/2.11.0/index.html#scala.concurrent.duration.Duration).  Attempting to define a rate without either required field will throw an `IllegalStateException` upon loading of the configuration.  In this way, defining rates are decoupled from defining rate limiting policies that may refer to them.
 
 - `ws.limited.policies` - This is expected to be an array of rate limiting policies.  Each policy must include a `rate` name, which _must_ exist as a defined rate in `ws.limited.rates` and `host` field to match outgoing requests against.  Rate limit policies also include support for two optional fields:  `port` (Int) and `path` (String).  Requests are matched based on the most specific policy they match.  If two policies are defined with the same host and port, the more specific (longer) path length will used to select the more specific policy.
+
+## License
+
+[MIT License](https://github.com/Kashoo/ws-limited/blob/master/LICENSE)
