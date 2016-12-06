@@ -11,8 +11,8 @@ object RequestRateLimits {
   def apply(rrl: RequestRateLimit*) = Set[RequestRateLimit](rrl:_*)
 
   def apply(config: Configuration): RequestRateLimits = {
-    val rateConfig = config.getConfig("com.kashoo.ws.rates").getOrElse(throw new IllegalStateException("Could not find configuration for WS rate limits (com.kashoo.ws.rates)"))
-    val reqMatcherConfigs = config.getConfigSeq("com.kashoo.ws.request-limits").getOrElse(throw new IllegalStateException("Could not find configuration for WS request rate limits (com.kashoo.ws.request-limits)"))
+    val rateConfig = config.getConfig("ws.limited.rates").getOrElse(throw new IllegalStateException("Could not find configuration for WS rate limits (ws.limited.rates)"))
+    val reqMatcherConfigs = config.getConfigSeq("ws.limited.policies").getOrElse(throw new IllegalStateException("Could not find configuration for WS request rate limits (ws.limited.policies)"))
     reqMatcherConfigs.map(RequestRateLimit(rateConfig, _)).toSet
   }
 

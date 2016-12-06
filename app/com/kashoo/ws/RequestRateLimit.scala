@@ -5,7 +5,7 @@ import play.api.Configuration
 /**
   * example config:
   *
-  * com.kashoo.ws.rates = {
+  * ws.limited.rates = {
   *   rate1 = {
   *     requests = 20
   *     period = 1 second
@@ -15,7 +15,7 @@ import play.api.Configuration
   *     period = 1 second
   *   }
   * }
-  * com.kashoo.ws.request-limits = [
+  * ws.limited.policies = [
   *  {
   *    rate = rate1
   *    host = "squareapi.com"
