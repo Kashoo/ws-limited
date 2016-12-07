@@ -16,8 +16,7 @@ scalacOptions ++= Seq("-deprecation", "-feature")
 libraryDependencies ++= Seq(
   ws,
   "org.mockito" % "mockito-core" % "1.10.19" % Test,
-  "de.leanovate.play-mockws" %% "play-mockws" % "2.4.2" % Test,
-  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % Test
+  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
 )
 
 coverageExcludedPackages := "<empty>;Reverse.*"
