@@ -16,7 +16,7 @@ class ExampleController @Inject() (@RateLimited ws: WSClient) extends Controller
 
   def test = Action.async { implicit request =>
     logger.info(s"Using client: ${ws.getClass}")
-    Future.sequence(Range(0, 3) map { i =>
+    Future.sequence(Range(0, 15) map { i =>
       ws.url(s"http://localhost:1111/$i").get().map { result =>
         logger.info("received response from http://localhost:1111")
       }
