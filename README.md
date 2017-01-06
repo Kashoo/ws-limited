@@ -2,7 +2,7 @@
 
 ## Introduction
 
-A Scala [Play framework](https://www.playframework.com/) module supporting simple rate limiting of requests made through [Play WS](https://www.playframework.com/documentation/2.4.x/ScalaWS)
+A Scala [Play framework](https://www.playframework.com/) module supporting simple, client-side rate limiting of requests made through [Play WS](https://www.playframework.com/documentation/2.4.x/ScalaWS)
 
 Currently the library only supports Play 2.4.x.
 
@@ -55,6 +55,21 @@ When using the WSLimitedModule to provide WSClient dependencies, all provided cl
 - `ws.limited.rates` - This is expected to be an object/map containing rate names to defined rates.  Each defined rate must have both a `queries` and `period` attribute.  The period should be defined as a String but will be parsed as a [Duration](http://www.scala-lang.org/api/2.11.0/index.html#scala.concurrent.duration.Duration).  Attempting to define a rate without either required field will throw an `IllegalStateException` upon loading of the configuration.  In this way, defining rates are decoupled from defining rate limiting policies that may refer to them.
 
 - `ws.limited.policies` - This is expected to be an array of rate limiting policies.  Each policy must include a `rate` name, which _must_ exist as a defined rate in `ws.limited.rates` and `host` field to match outgoing requests against.  Rate limit policies also include support for two optional fields:  `port` (Int) and `path` (String).  Requests are matched based on the most specific policy they match.  If two policies are defined with the same host and port, the more specific (longer) path length will used to select the more specific policy.
+
+- `ws.limited.execution-context` - Optional setting to allow more explicit configuration of the execution context that any blocked futures will be run against.  It is expected to be a valid thread pool executor configuration.  If not provided, defaults to Play's default execution context.  See [Plays guide on using alternate contexts](https://www.playframework.com/documentation/2.4.x/ThreadPools#Using-other-thread-pools) for more info.  Also see the Limitations section below for some words of caution around using blocking threads in general.  An example:
+
+```
+ws.limited.execution-context = {
+  fork-join-executor {
+    parallelism-factor = 20.0
+    parallelism-max = 200
+  }
+}
+```
+
+## Limitations
+
+The main limitation of this library is that it relies on Guava's RateLimiter under the hood, which of course uses blocking to achieve the desired effect.  The code will remain asynchronous via Futures, there will be threads blocking in the implementation.  Because of this, care must still be taken not to issue requests at a rate much greater than a configured rate limit, as it will surely consume all available thread resources eventually and lead to potential deadlock.  Also for this reason, the thread pool used for executing tasks that will be subject to such blocking is exposed for configuration and may be provided with a custom, dedicated thread pool for better performance.  [This resource](http://blog.jessitron.com/2014/01/choosing-executorservice.html) is helpful for understanding how to choose an appropriate thread pool  A future version of the library intends on removing this limitation all together.
 
 ## License
 
