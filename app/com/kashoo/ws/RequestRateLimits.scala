@@ -4,6 +4,36 @@ import java.net.URI
 
 import play.api.Configuration
 
+/**
+  * Provides rate limits from application configuration.
+  * Also provides a function for matching requests against a set of rate limits
+  *
+  * @example
+  * <pre>
+  * ws.limited.rates = {
+  *   rate1 = {
+  *     requests = 20
+  *     period = 1 second
+  *   },
+  *   rate2 = {
+  *     requests = 5
+  *     period = 1 second
+  *   }
+  * }
+  * ws.limited.policies = [
+  *  {
+  *    rate = rate1
+  *    host = "squareapi.com"
+  *    port = 9000
+  *  }
+  *  {
+  *    rate = rate2
+  *    host = "squareapi.com"
+  *    port = 9000
+  *  }
+  * ]
+  * </pre>
+  */
 object RequestRateLimits {
 
   type RequestRateLimits = Set[RequestRateLimit]
@@ -28,6 +58,7 @@ object RequestRateLimits {
       case matcher if matcher(UriWrapper(uri), limits).isDefined => matcher(UriWrapper(uri), limits).get
     }
 
+  /* Defines the specificity order in which the matchers are tried */
   private val specificityMatchers: Seq[Matcher] = Seq(matchAll, matchHostAndPort, matchHost)
 
   private type Matcher = (UriWrapper, RequestRateLimits) => Option[RequestRateLimit]
