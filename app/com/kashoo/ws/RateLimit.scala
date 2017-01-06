@@ -7,8 +7,7 @@ import scala.concurrent._
 import scala.concurrent.duration._
 
 /**
-  * Simple rate limiter
-  * Inspired from https://github.com/wspringer/scala-rate-limiter
+  * Simple Rate definition
   */
 case class Rate(number: Int, period: Duration) {
   override def toString: String = s"$number requests per $period"
@@ -31,13 +30,19 @@ object Rate {
 
 }
 
+/**
+  * Rudimentary rate limiter using Guava's RateLimiter
+  * Inspired from https://github.com/wspringer/scala-rate-limiter
+  * @param rate rate to limit invocations at
+  * @param ec thread pool to execute limited tasks on
+  */
 case class RateLimit(rate: Rate)(implicit ec: ExecutionContext) {
-  val limiter = RateLimiter.create(rate.number / (rate.period / 1.second))
+  private val limiter: RateLimiter = RateLimiter.create(rate.number / (rate.period / 1.second))
 
   /**
     * Limits the provided function by a delay if necessary
     */
-  def limit[T](fn: => Future[T]) = {
+  def limit[T](fn: => Future[T]): Future[T] = {
     Future {
       blocking {
         limiter.acquire()
