@@ -1,5 +1,7 @@
 # WSLimited Play 2 Module
 
+[![Build Status](https://travis-ci.org/Kashoo/ws-limited.svg?branch=master)](https://travis-ci.org/Kashoo/ws-limited)
+
 ## Introduction
 
 A Scala [Play framework](https://www.playframework.com/) module supporting simple rate limiting of requests made through [Play WS](https://www.playframework.com/documentation/2.4.x/ScalaWS)
