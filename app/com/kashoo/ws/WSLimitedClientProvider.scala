@@ -6,7 +6,7 @@ import play.api.Configuration
 import play.api.libs.ws.{WSAPI, WSClient}
 
 /**
-  * Provider that wraps clients provided by [[play.api.libs.ws.WSAPI]] with [[com.kashoo.ws.WSLimitedClientAdapter]]
+  * Provider that wraps clients provided by WSAPI with [[com.kashoo.ws.WSLimitedClientAdapter]]
   *
   * @param config application configuration
   * @param wsApi WSAPI implementation

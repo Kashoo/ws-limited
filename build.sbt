@@ -25,8 +25,7 @@ libraryDependencies ++= Seq(
 
 coverageExcludedPackages := "<empty>;Reverse.*"
 
-resolvers ++= Seq("Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/",
-                  "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases")
+resolvers ++= Seq("scalaz-bintray" at "https://dl.bintray.com/scalaz/releases")
 
 publishMavenStyle := true
 
