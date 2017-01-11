@@ -14,4 +14,9 @@
     <appender-ref ref="STDOUT"/>
   </logger>
 
+  <!-- Logger configuration -->
+  <logger name="request-rate-limit" level="TRACE">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
 </configuration>

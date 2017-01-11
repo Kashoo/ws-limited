@@ -10,7 +10,9 @@ import play.api.Configuration
   * @param path optional path to match against.  In the case that a request matches two matchers, the one with the longest path
   *             wins
   */
-case class RequestMatcher(host: String, port: Option[Int] = None, path: Option[String] = None)
+case class RequestMatcher(host: String, port: Option[Int] = None, path: Option[String] = None) {
+  override def toString: String = s"$host${port.map(p => s":$p").getOrElse("")}${path.map(p => s"/$p").getOrElse("")}"
+}
 
 object RequestMatcher {
   def apply(config: Configuration): RequestMatcher = {

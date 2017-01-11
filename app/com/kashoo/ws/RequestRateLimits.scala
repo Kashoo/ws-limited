@@ -3,6 +3,7 @@ package com.kashoo.ws
 import java.net.URI
 
 import play.api.Configuration
+import play.libs.Akka
 
 /**
   * Provides rate limits from application configuration.
@@ -38,12 +39,16 @@ object RequestRateLimits {
 
   type RequestRateLimits = Set[RequestRateLimit]
 
-  def apply(rrl: RequestRateLimit*) = Set[RequestRateLimit](rrl:_*)
+  def apply(rrl: RequestRateLimit*): RequestRateLimits = Set[RequestRateLimit](rrl:_*)
 
   def apply(config: Configuration): RequestRateLimits = {
+    val rateLimiterEc = config.getConfig("ws.limited.execution-context") match {
+      case Some(ecConfig) => Akka.system.dispatchers.lookup("ws.limited.execution-context")
+      case None => play.api.libs.concurrent.Execution.Implicits.defaultContext
+    }
     val rateConfig = config.getConfig("ws.limited.rates").getOrElse(throw new IllegalStateException("Could not find configuration for WS rate limits (ws.limited.rates)"))
     val reqMatcherConfigs = config.getConfigSeq("ws.limited.policies").getOrElse(throw new IllegalStateException("Could not find configuration for WS request rate limits (ws.limited.policies)"))
-    reqMatcherConfigs.map(RequestRateLimit(rateConfig, _)).toSet
+    reqMatcherConfigs.map(RequestRateLimit(rateConfig, _)(rateLimiterEc)).toSet
   }
 
   /**
@@ -89,7 +94,7 @@ object RequestRateLimits {
   }
 
   private case class UriWrapper(uri: URI) {
-    def getHost = uri.getHost
+    def getHost: String = uri.getHost
     def getPort: Option[Int] = if (uri.getPort == -1) None else Some(uri.getPort)
     def getPath = Option(uri.getPath)
   }
