@@ -7,6 +7,7 @@ import scala.concurrent.Future
 
 /**
   * Wraps a WSRequest, applying a request rate limit to the outgoing execution
+  *
   * @param wsRequest underlying request
   * @param rateLimit rate limit to apply to outgoing request
   */

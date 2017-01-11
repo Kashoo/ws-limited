@@ -5,30 +5,9 @@ import play.api.{Configuration, Logger}
 import scala.concurrent.ExecutionContext
 
 /**
-  * example config:
+  * Associates a rate limit with a request matcher for applying to outgoing client requests.
   *
-  * ws.limited.rates = {
-  *   rate1 = {
-  *     requests = 20
-  *     period = 1 second
-  *   },
-  *   rate2 = {
-  *     requests = 5
-  *     period = 1 second
-  *   }
-  * }
-  * ws.limited.policies = [
-  *  {
-  *    rate = rate1
-  *    host = "squareapi.com"
-  *    port = 9000
-  *  }
-  *  {
-  *    rate = rate2
-  *    host = "squareapi.com"
-  *    port = 9000
-  *  }
-  * ]
+  * By default uses Play's default ExecutionContext [[play.api.libs.concurrent.Execution.Implicits.defaultContext]]
   *
   */
 case class RequestRateLimit(rate: Rate, requestMatcher: RequestMatcher)(implicit val ec: ExecutionContext) {
