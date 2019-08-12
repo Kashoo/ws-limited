@@ -4,6 +4,7 @@ import play.api.libs.iteratee.Enumerator
 import play.api.libs.ws._
 
 import scala.concurrent.Future
+import scala.concurrent.duration.Duration
 
 /**
   * Wraps a WSRequest, applying a request rate limit to the outgoing execution
@@ -24,13 +25,13 @@ case class WSLimitedRequestAdapter(wsRequest: WSRequest, rateLimit: RateLimit) e
 
   override def sign(calc: WSSignatureCalculator): WSRequest =  WSLimitedRequestAdapter(wsRequest.sign(calc), rateLimit)
 
-  override def stream(): Future[(WSResponseHeaders, Enumerator[Array[Byte]])] = rateLimit.limit(wsRequest.stream)
+  override def stream(): Future[StreamedResponse] = rateLimit.limit(wsRequest.stream)
 
   override def withVirtualHost(vh: String): WSRequest =  WSLimitedRequestAdapter(wsRequest.withVirtualHost(vh), rateLimit)
 
   override def withMethod(method: String): WSRequest = WSLimitedRequestAdapter(wsRequest.withMethod(method), rateLimit)
 
-  override def withRequestTimeout(timeout: Long): WSRequest =  WSLimitedRequestAdapter(wsRequest.withRequestTimeout(timeout), rateLimit)
+  override def withRequestTimeout(timeout: Duration): WSRequest =  WSLimitedRequestAdapter(wsRequest.withRequestTimeout(timeout), rateLimit)
 
   override def withProxyServer(proxyServer: WSProxyServer): WSRequest =  WSLimitedRequestAdapter(wsRequest.withProxyServer(proxyServer), rateLimit)
 
@@ -48,4 +49,8 @@ case class WSLimitedRequestAdapter(wsRequest: WSRequest, rateLimit: RateLimit) e
   override val proxyServer: Option[WSProxyServer] = wsRequest.proxyServer
   override val auth: Option[(String, String, WSAuthScheme)] = wsRequest.auth
   override val headers: Map[String, Seq[String]] = wsRequest.headers
+
+  override def withRequestFilter(filter: WSRequestFilter): WSRequest = WSLimitedRequestAdapter(wsRequest.withRequestFilter(filter), rateLimit)
+
+  override def streamWithEnumerator(): Future[(WSResponseHeaders, Enumerator[Array[Byte]])] = wsRequest.streamWithEnumerator()
 }

@@ -3,7 +3,7 @@ organization := "com.kashoo"
 
 name := """ws-limited"""
 
-version := "0.1.0"
+version := "1.1.0"
 
 description := "Play library offering simple rate limiting of WSClient requests based on application configuration"
 
