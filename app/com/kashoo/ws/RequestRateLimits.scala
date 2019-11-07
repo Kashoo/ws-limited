@@ -46,8 +46,8 @@ object RequestRateLimits {
       case Some(ecConfig) => Akka.system.dispatchers.lookup("ws.limited.execution-context")
       case None => play.api.libs.concurrent.Execution.Implicits.defaultContext
     }
-    val rateConfig = config.getConfig("ws.limited.rates").getOrElse(throw new IllegalStateException("Could not find configuration for WS rate limits (ws.limited.rates)"))
-    val reqMatcherConfigs = config.getConfigSeq("ws.limited.policies").getOrElse(throw new IllegalStateException("Could not find configuration for WS request rate limits (ws.limited.policies)"))
+    val rateConfig = config.getOptional[Configuration]("ws.limited.rates").getOrElse(throw new IllegalStateException("Could not find configuration for WS rate limits (ws.limited.rates)"))
+    val reqMatcherConfigs = config.getOptional[Seq[Configuration]]("ws.limited.policies").getOrElse(throw new IllegalStateException("Could not find configuration for WS request rate limits (ws.limited.policies)"))
     reqMatcherConfigs.map(RequestRateLimit(rateConfig, _)(rateLimiterEc)).toSet
   }
 

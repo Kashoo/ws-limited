@@ -1,7 +1,12 @@
 package com.kashoo.ws
 
-import play.api.libs.iteratee.Enumerator
+import java.io.File
+import java.net.URI
+
+import akka.stream.scaladsl.Source
+import akka.util.ByteString
 import play.api.libs.ws._
+import play.api.mvc.MultipartFormData
 
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
@@ -25,8 +30,6 @@ case class WSLimitedRequestAdapter(wsRequest: WSRequest, rateLimit: RateLimit) e
 
   override def sign(calc: WSSignatureCalculator): WSRequest =  WSLimitedRequestAdapter(wsRequest.sign(calc), rateLimit)
 
-  override def stream(): Future[StreamedResponse] = rateLimit.limit(wsRequest.stream)
-
   override def withVirtualHost(vh: String): WSRequest =  WSLimitedRequestAdapter(wsRequest.withVirtualHost(vh), rateLimit)
 
   override def withMethod(method: String): WSRequest = WSLimitedRequestAdapter(wsRequest.withMethod(method), rateLimit)
@@ -36,8 +39,6 @@ case class WSLimitedRequestAdapter(wsRequest: WSRequest, rateLimit: RateLimit) e
   override def withProxyServer(proxyServer: WSProxyServer): WSRequest =  WSLimitedRequestAdapter(wsRequest.withProxyServer(proxyServer), rateLimit)
 
   override def withFollowRedirects(follow: Boolean): WSRequest =  WSLimitedRequestAdapter(wsRequest.withFollowRedirects(follow), rateLimit)
-
-  override def withBody(body: WSBody): WSRequest =  WSLimitedRequestAdapter(wsRequest.withBody(body), rateLimit)
 
   override val calc: Option[WSSignatureCalculator] = wsRequest.calc
   override val queryString: Map[String, Seq[String]] = wsRequest.queryString
@@ -52,5 +53,47 @@ case class WSLimitedRequestAdapter(wsRequest: WSRequest, rateLimit: RateLimit) e
 
   override def withRequestFilter(filter: WSRequestFilter): WSRequest = WSLimitedRequestAdapter(wsRequest.withRequestFilter(filter), rateLimit)
 
-  override def streamWithEnumerator(): Future[(WSResponseHeaders, Enumerator[Array[Byte]])] = wsRequest.streamWithEnumerator()
+  override def withHttpHeaders(headers: (String, String)*): WSRequest = WSLimitedRequestAdapter(wsRequest.withHttpHeaders(headers:_*), rateLimit)
+
+  override def withQueryStringParameters(parameters: (String, String)*): WSRequest = WSLimitedRequestAdapter(wsRequest.withQueryStringParameters(parameters:_*), rateLimit)
+
+  override def withCookies(cookie: WSCookie*): WSRequest = WSLimitedRequestAdapter(wsRequest.withCookies(cookie:_*), rateLimit)
+
+  override def withBody[T](body: T)(implicit evidence$1: BodyWritable[T]): WSRequest = WSLimitedRequestAdapter(wsRequest.withBody(body), rateLimit)
+
+  override def get(): Future[WSResponse] = rateLimit.limit(wsRequest.get())
+
+  override def post[T](body: T)(implicit evidence$2: BodyWritable[T]): Future[WSResponse] = rateLimit.limit(wsRequest.post(body))
+
+  override def post(body: File): Future[WSResponse] = rateLimit.limit(wsRequest.post(body))
+
+  override def post(body: Source[MultipartFormData.Part[Source[ByteString, _]], _]): Future[WSResponse] = rateLimit.limit(wsRequest.post(body))
+
+  override def patch[T](body: T)(implicit evidence$3: BodyWritable[T]): Future[WSResponse] = rateLimit.limit(wsRequest.patch(body))
+
+  override def patch(body: File): Future[WSResponse] = rateLimit.limit(wsRequest.patch(body))
+
+  override def patch(body: Source[MultipartFormData.Part[Source[ByteString, _]], _]): Future[WSResponse] = rateLimit.limit(wsRequest.patch(body))
+
+  override def put[T](body: T)(implicit evidence$4: BodyWritable[T]): Future[WSResponse] = rateLimit.limit(wsRequest.put(body))
+
+  override def put(body: File): Future[WSResponse] = rateLimit.limit(wsRequest.put(body))
+
+  override def put(body: Source[MultipartFormData.Part[Source[ByteString, _]], _]): Future[WSResponse] = rateLimit.limit(wsRequest.put(body))
+
+  override def delete(): Future[WSResponse] = rateLimit.limit(wsRequest.delete())
+
+  override def head(): Future[WSResponse] = rateLimit.limit(wsRequest.head())
+
+  override def options(): Future[WSResponse] = rateLimit.limit(wsRequest.options())
+
+  override def execute(method: String): Future[WSResponse] = rateLimit.limit(wsRequest.execute(method))
+
+  override def uri: URI = wsRequest.uri
+
+  override def contentType: Option[String] = wsRequest.contentType
+
+  override def cookies: Seq[WSCookie] = wsRequest.cookies
+
+  override def stream(): Future[WSResponse] = rateLimit.limit(wsRequest.stream())
 }
