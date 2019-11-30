@@ -16,9 +16,9 @@ case class RequestMatcher(host: String, port: Option[Int] = None, path: Option[S
 
 object RequestMatcher {
   def apply(config: Configuration): RequestMatcher = {
-    val host = config.getString("host").getOrElse(throw new IllegalStateException("Rate limit must include a host to match requests against"))
-    val port = config.getInt("port")
-    val path = config.getString("path")
+    val host = config.getOptional[String]("host").getOrElse(throw new IllegalStateException("Rate limit must include a host to match requests against"))
+    val port = config.getOptional[Int]("port")
+    val path = config.getOptional[String]("path")
     RequestMatcher(host, port, path)
   }
 }

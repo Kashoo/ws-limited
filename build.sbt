@@ -3,7 +3,7 @@ organization := "com.kashoo"
 
 name := """ws-limited"""
 
-version := "2.0.0"
+version := "3.0.0"
 
 description := "Play library offering simple rate limiting of WSClient requests based on application configuration"
 
@@ -30,7 +30,7 @@ resolvers ++= Seq("scalaz-bintray" at "https://dl.bintray.com/scalaz/releases")
 
 publishMavenStyle := true
 
-publishArtifact in Test := false
+Test / publishArtifact := false
 
 publishTo := {
   val nexus = "https://oss.sonatype.org/"

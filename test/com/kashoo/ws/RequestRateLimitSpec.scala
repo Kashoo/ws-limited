@@ -1,10 +1,10 @@
 package com.kashoo.ws
 
-import com.typesafe.config.ConfigObject
 import org.scalatest.{FlatSpec, Matchers}
 import play.api.Configuration
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class RequestRateLimitSpec extends FlatSpec with Matchers with MockitoSugar {
 
