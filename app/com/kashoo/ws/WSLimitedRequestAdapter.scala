@@ -20,11 +20,11 @@ import scala.concurrent.duration.Duration
 case class WSLimitedRequestAdapter(wsRequest: WSRequest, rateLimit: RateLimit) extends WSRequest {
   override val url: String = wsRequest.url
 
-  override def withHeaders(hdrs: (String, String)*): WSRequest =  WSLimitedRequestAdapter(wsRequest.withHeaders(hdrs:_*), rateLimit)
+  override def withHeaders(hdrs: (String, String)*): WSRequest =  WSLimitedRequestAdapter(wsRequest.withHttpHeaders(hdrs:_*), rateLimit)
 
   override def withAuth(username: String, password: String, scheme: WSAuthScheme): WSRequest =  WSLimitedRequestAdapter(wsRequest.withAuth(username, password, scheme), rateLimit)
 
-  override def withQueryString(parameters: (String, String)*): WSRequest =  WSLimitedRequestAdapter(wsRequest.withQueryString(parameters:_*), rateLimit)
+  override def withQueryString(parameters: (String, String)*): WSRequest =  WSLimitedRequestAdapter(wsRequest.withQueryStringParameters(parameters:_*), rateLimit)
 
   override def execute(): Future[WSResponse] = rateLimit.limit(wsRequest.execute)
 
@@ -45,7 +45,7 @@ case class WSLimitedRequestAdapter(wsRequest: WSRequest, rateLimit: RateLimit) e
   override val method: String = wsRequest.method
   override val followRedirects: Option[Boolean] = wsRequest.followRedirects
   override val body: WSBody = wsRequest.body
-  override val requestTimeout: Option[Int] = wsRequest.requestTimeout
+  override val requestTimeout: Option[Duration] = wsRequest.requestTimeout
   override val virtualHost: Option[String] = wsRequest.virtualHost
   override val proxyServer: Option[WSProxyServer] = wsRequest.proxyServer
   override val auth: Option[(String, String, WSAuthScheme)] = wsRequest.auth
@@ -96,4 +96,6 @@ case class WSLimitedRequestAdapter(wsRequest: WSRequest, rateLimit: RateLimit) e
   override def cookies: Seq[WSCookie] = wsRequest.cookies
 
   override def stream(): Future[WSResponse] = rateLimit.limit(wsRequest.stream())
+
+  override def withUrl(url: String): WSRequest = WSLimitedRequestAdapter(wsRequest.withUrl(url), rateLimit)
 }

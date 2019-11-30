@@ -20,7 +20,7 @@ object RequestRateLimit {
 
   def apply(rateConfig: Configuration, requestLimitConfig: Configuration)
            (implicit ec: ExecutionContext = play.api.libs.concurrent.Execution.Implicits.defaultContext): RequestRateLimit = {
-    val rateName = requestLimitConfig.getString("rate").getOrElse(throw new IllegalStateException("Rate is required for a request limit configuration"))
+    val rateName = requestLimitConfig.getOptional[String]("rate").getOrElse(throw new IllegalStateException("Rate is required for a request limit configuration"))
     val rate = Rate(rateConfig, rateName)
     val reqMatcher = RequestMatcher(requestLimitConfig)
     logger.trace(s"Enabling client request rate limit against $reqMatcher with $rate, using $ec")

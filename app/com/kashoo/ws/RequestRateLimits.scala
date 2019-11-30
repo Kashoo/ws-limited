@@ -2,8 +2,11 @@ package com.kashoo.ws
 
 import java.net.URI
 
+import akka.actor.ActorSystem
+import com.typesafe.config.ConfigObject
 import play.api.Configuration
-import play.libs.Akka
+
+import scala.concurrent.ExecutionContext
 
 /**
   * Provides rate limits from application configuration.
@@ -41,10 +44,10 @@ object RequestRateLimits {
 
   def apply(rrl: RequestRateLimit*): RequestRateLimits = Set[RequestRateLimit](rrl:_*)
 
-  def apply(config: Configuration): RequestRateLimits = {
-    val rateLimiterEc = config.getConfig("ws.limited.execution-context") match {
-      case Some(ecConfig) => Akka.system.dispatchers.lookup("ws.limited.execution-context")
-      case None => play.api.libs.concurrent.Execution.Implicits.defaultContext
+  def apply(config: Configuration, actorSystem: ActorSystem)(implicit ec: ExecutionContext): RequestRateLimits = {
+    val rateLimiterEc = config.getOptional[ConfigObject]("ws.limited.execution-context") match {
+      case Some(ecConfig) => actorSystem.dispatchers.lookup("ws.limited.execution-context")
+      case None => ec
     }
     val rateConfig = config.getOptional[Configuration]("ws.limited.rates").getOrElse(throw new IllegalStateException("Could not find configuration for WS rate limits (ws.limited.rates)"))
     val reqMatcherConfigs = config.getOptional[Seq[Configuration]]("ws.limited.policies").getOrElse(throw new IllegalStateException("Could not find configuration for WS request rate limits (ws.limited.policies)"))

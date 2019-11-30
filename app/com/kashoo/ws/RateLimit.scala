@@ -1,6 +1,7 @@
 package com.kashoo.ws
 
 import com.google.common.util.concurrent.RateLimiter
+import com.typesafe.config.ConfigObject
 import play.api.Configuration
 
 import scala.concurrent._
@@ -22,9 +23,9 @@ object Rate {
   }
 
   def apply(rateConfig: Configuration, rateName: String): Rate = {
-    val rateNameConfig = rateConfig.getConfig(rateName).getOrElse(throw new IllegalStateException(s"Could not find rate configuration for $rateName ( com.kashoo.ws.rates.$rateName )"))
-    val queries = rateNameConfig.getInt("queries").getOrElse(throw new IllegalStateException("Rate limit must define the number of queries"))
-    val period = rateNameConfig.getString("period").getOrElse(throw new IllegalStateException("Rate limit must have a period"))
+    val rateNameConfig = rateConfig.getOptional[Configuration](rateName).getOrElse(throw new IllegalStateException(s"Could not find rate configuration for $rateName ( com.kashoo.ws.rates.$rateName )"))
+    val queries = rateNameConfig.getOptional[Int]("queries").getOrElse(throw new IllegalStateException("Rate limit must define the number of queries"))
+    val period = rateNameConfig.getOptional[String]("period").getOrElse(throw new IllegalStateException("Rate limit must have a period"))
     Rate(queries, Duration(period))
   }
 

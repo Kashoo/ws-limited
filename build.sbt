@@ -21,7 +21,7 @@ libraryDependencies ++= Seq(
   ws,
   guice,
   "org.mockito" % "mockito-core" % "1.10.19" % Test,
-  "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.0" % Test
+  "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.3" % Test
 )
 
 coverageExcludedPackages := "<empty>;Reverse.*"
