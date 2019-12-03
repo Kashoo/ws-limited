@@ -6,8 +6,8 @@ import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
-import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FlatSpec, Matchers}
+import org.scalatestplus.mockito.MockitoSugar
 import play.Logger
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 
@@ -16,6 +16,8 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 class WSLimitedIntegrationTest extends FlatSpec with MockitoSugar with Matchers {
+
+  private val logger = Logger.of(classOf[WSLimitedIntegrationTest])
 
   /** Rudimentary timer */
   def time[R](block: => R): Duration = {
@@ -55,7 +57,7 @@ class WSLimitedIntegrationTest extends FlatSpec with MockitoSugar with Matchers 
       Await.result(Future.sequence(Range(0, 4).map { i => client.url(s"http://localhost:9001/$i").get() }), 2.minutes)
     }
     val ninetySeconds = 90.seconds
-    Logger.info(s"1st endpoint duration: ${s1f1Time.toSeconds}s")
+    logger.info(s"1st endpoint duration: ${s1f1Time.toSeconds}s")
     assert(s1f1Time.lteq(ninetySeconds + 5.second))
 
 
@@ -63,7 +65,7 @@ class WSLimitedIntegrationTest extends FlatSpec with MockitoSugar with Matchers 
     val s1f2Time = time {
       Await.result(Future.sequence(Range(0, 10).map { i => client.url(s"http://localhost:9001/specific/path/$i").get() }), 1.minute)
     }
-    Logger.info(s"2nd endpoint duration: ${s1f2Time.toSeconds}s")
+    logger.info(s"2nd endpoint duration: ${s1f2Time.toSeconds}s")
     assert(s1f2Time.lteq(1.minute))
   }
 

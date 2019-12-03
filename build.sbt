@@ -3,7 +3,7 @@ organization := "com.kashoo"
 
 name := """ws-limited"""
 
-version := "1.1.0"
+version := "3.0.0"
 
 description := "Play library offering simple rate limiting of WSClient requests based on application configuration"
 
@@ -13,14 +13,15 @@ homepage := Some(url("https://github.com/Kashoo/ws-limited"))
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.10"
 
 scalacOptions ++= Seq("-deprecation", "-feature")
 
 libraryDependencies ++= Seq(
   ws,
+  guice,
   "org.mockito" % "mockito-core" % "1.10.19" % Test,
-  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
+  "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.3" % Test
 )
 
 coverageExcludedPackages := "<empty>;Reverse.*"
@@ -29,7 +30,7 @@ resolvers ++= Seq("scalaz-bintray" at "https://dl.bintray.com/scalaz/releases")
 
 publishMavenStyle := true
 
-publishArtifact in Test := false
+Test / publishArtifact := false
 
 publishTo := {
   val nexus = "https://oss.sonatype.org/"

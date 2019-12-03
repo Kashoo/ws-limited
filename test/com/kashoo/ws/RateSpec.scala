@@ -3,8 +3,8 @@ package com.kashoo.ws
 import java.util.concurrent.TimeUnit
 
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.{Matchers, FlatSpec}
+import org.scalatest.{FlatSpec, Matchers}
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 
 import scala.concurrent.duration._
@@ -17,21 +17,21 @@ class RateSpec extends FlatSpec with Matchers with MockitoSugar {
   }
 
   "RateLimit" should "instantiate from a full, valid configuration" in new TestScope() {
-    when(mockRateConfig.getConfig("rate1")).thenReturn(Some(mockInnerRateConfig))
-    when(mockInnerRateConfig.getInt("queries")).thenReturn(Some(5))
-    when(mockInnerRateConfig.getString("period")).thenReturn(Some("5 seconds"))
+    when(mockRateConfig.getOptional[Configuration]("rate1")).thenReturn(Some(mockInnerRateConfig))
+    when(mockInnerRateConfig.getOptional[Int]("queries")).thenReturn(Some(5))
+    when(mockInnerRateConfig.getOptional[String]("period")).thenReturn(Some("5 seconds"))
 
     val rateLimit = Rate(mockRateConfig, "rate1")
     rateLimit.number shouldBe 5
     rateLimit.period shouldBe Duration(5, TimeUnit.SECONDS)
 
-    verify(mockRateConfig).getConfig("rate1")
-    verify(mockInnerRateConfig).getInt("queries")
-    verify(mockInnerRateConfig).getString("period", null)
+    verify(mockRateConfig).getOptional[Configuration]("rate1")
+    verify(mockInnerRateConfig).getOptional[Int]("queries")
+    verify(mockInnerRateConfig).getOptional[String]("period")
   }
 
   it should "throw an exception when instantiated with a rate name configuration that does not exist" in new TestScope() {
-    when(mockRateConfig.getConfig("rate1")).thenReturn(None)
+    when(mockRateConfig.getOptional[Configuration]("rate1")).thenReturn(None)
 
     intercept[IllegalStateException] {
       Rate(mockRateConfig, "rate1")
@@ -39,9 +39,9 @@ class RateSpec extends FlatSpec with Matchers with MockitoSugar {
   }
 
   it should "throw an exception when instantiated with a configuration without a queries value" in new TestScope() {
-    when(mockRateConfig.getConfig("rate1")).thenReturn(Some(mockInnerRateConfig))
-    when(mockInnerRateConfig.getInt("queries")).thenReturn(None)
-    when(mockInnerRateConfig.getString("period")).thenReturn(Some("5 seconds"))
+    when(mockRateConfig.getOptional[Configuration]("rate1")).thenReturn(Some(mockInnerRateConfig))
+    when(mockInnerRateConfig.getOptional[Int]("queries")).thenReturn(None)
+    when(mockInnerRateConfig.getOptional[String]("period")).thenReturn(Some("5 seconds"))
 
     intercept[IllegalStateException] {
       Rate(mockRateConfig, "rate1")
@@ -49,9 +49,9 @@ class RateSpec extends FlatSpec with Matchers with MockitoSugar {
   }
 
   it should "throw an exception when instantiated with a configuration without a period value" in new TestScope() {
-    when(mockRateConfig.getConfig("rate1")).thenReturn(Some(mockInnerRateConfig))
-    when(mockInnerRateConfig.getInt("queries")).thenReturn(Some(10))
-    when(mockInnerRateConfig.getString("period")).thenReturn(None)
+    when(mockRateConfig.getOptional[Configuration]("rate1")).thenReturn(Some(mockInnerRateConfig))
+    when(mockInnerRateConfig.getOptional[Int]("queries")).thenReturn(Some(10))
+    when(mockInnerRateConfig.getOptional[String]("period")).thenReturn(None)
 
     intercept[IllegalStateException] {
       Rate(mockRateConfig, "rate1")
