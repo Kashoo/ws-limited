@@ -13,9 +13,11 @@ import scala.concurrent.ExecutionContext
   * @param config application configuration
   * @param ws WSClient implementation
   */
-class WSLimitedClientProvider @Inject() (config: Configuration, ws: WSClient, actorSystem: ActorSystem)(implicit ec: ExecutionContext) extends Provider[WSClient] {
+class WSLimitedClientProvider @Inject() (config: Configuration, ws: WSClient)
+                                        (implicit actorSystem: ActorSystem, ec: ExecutionContext)
+  extends Provider[WSClient] {
 
-  val limitedClient: WSLimitedClientAdapter = WSLimitedClientAdapter(ws, RequestRateLimits(config, actorSystem))
+  val limitedClient: WSLimitedClientAdapter = WSLimitedClientAdapter(ws, RequestRateLimits(config))
 
   override def get(): WSClient = limitedClient
 }

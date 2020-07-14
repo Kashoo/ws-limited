@@ -44,7 +44,7 @@ object RequestRateLimits {
 
   def apply(rrl: RequestRateLimit*): RequestRateLimits = Set[RequestRateLimit](rrl:_*)
 
-  def apply(config: Configuration, actorSystem: ActorSystem)(implicit ec: ExecutionContext): RequestRateLimits = {
+  def apply(config: Configuration)(implicit actorSystem: ActorSystem, ec: ExecutionContext): RequestRateLimits = {
     val rateLimiterEc = config.getOptional[ConfigObject]("ws.limited.execution-context") match {
       case Some(_) => actorSystem.dispatchers.lookup("ws.limited.execution-context")
       case None => ec
