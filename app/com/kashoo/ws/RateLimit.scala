@@ -17,14 +17,14 @@ case class Rate(number: Int, period: Duration) {
 object Rate {
 
   implicit class RateBuilder(val number: Int) extends AnyVal {
-    def per(duration: Duration) = Rate(number, duration)
-    def / (duration: Duration) = Rate(number, duration)
+    def per(duration: Duration): Rate = Rate(number, duration)
+    def / (duration: Duration): Rate = Rate(number, duration)
   }
 
   def apply(rateConfig: Configuration, rateName: String): Rate = {
-    val rateNameConfig = rateConfig.getConfig(rateName).getOrElse(throw new IllegalStateException(s"Could not find rate configuration for $rateName ( com.kashoo.ws.rates.$rateName )"))
-    val queries = rateNameConfig.getInt("queries").getOrElse(throw new IllegalStateException("Rate limit must define the number of queries"))
-    val period = rateNameConfig.getString("period").getOrElse(throw new IllegalStateException("Rate limit must have a period"))
+    val rateNameConfig = rateConfig.getOptional[Configuration](rateName).getOrElse(throw new IllegalStateException(s"Could not find rate configuration for $rateName ( com.kashoo.ws.rates.$rateName )"))
+    val queries = rateNameConfig.getOptional[Int]("queries").getOrElse(throw new IllegalStateException("Rate limit must define the number of queries"))
+    val period = rateNameConfig.getOptional[String]("period").getOrElse(throw new IllegalStateException("Rate limit must have a period"))
     Rate(queries, Duration(period))
   }
 
