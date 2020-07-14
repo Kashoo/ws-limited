@@ -1,7 +1,6 @@
 package com.kashoo.ws
 
 import com.google.common.util.concurrent.RateLimiter
-import com.typesafe.config.ConfigObject
 import play.api.Configuration
 
 import scala.concurrent._
@@ -18,8 +17,8 @@ case class Rate(number: Int, period: Duration) {
 object Rate {
 
   implicit class RateBuilder(val number: Int) extends AnyVal {
-    def per(duration: Duration) = Rate(number, duration)
-    def / (duration: Duration) = Rate(number, duration)
+    def per(duration: Duration): Rate = Rate(number, duration)
+    def / (duration: Duration): Rate = Rate(number, duration)
   }
 
   def apply(rateConfig: Configuration, rateName: String): Rate = {

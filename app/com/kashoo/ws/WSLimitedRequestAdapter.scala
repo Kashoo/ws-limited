@@ -20,13 +20,19 @@ import scala.concurrent.duration.Duration
 case class WSLimitedRequestAdapter(wsRequest: WSRequest, rateLimit: RateLimit) extends WSRequest {
   override val url: String = wsRequest.url
 
-  override def withHeaders(hdrs: (String, String)*): WSRequest =  WSLimitedRequestAdapter(wsRequest.withHttpHeaders(hdrs:_*), rateLimit)
+  override def withHttpHeaders(hdrs: (String, String)*): WSRequest =  WSLimitedRequestAdapter(wsRequest.withHttpHeaders(hdrs:_*), rateLimit)
+
+  @deprecated
+  override def withHeaders(hdrs: (String, String)*): WSRequest = WSLimitedRequestAdapter(wsRequest.withHttpHeaders(hdrs:_*), rateLimit)
 
   override def withAuth(username: String, password: String, scheme: WSAuthScheme): WSRequest =  WSLimitedRequestAdapter(wsRequest.withAuth(username, password, scheme), rateLimit)
 
-  override def withQueryString(parameters: (String, String)*): WSRequest =  WSLimitedRequestAdapter(wsRequest.withQueryStringParameters(parameters:_*), rateLimit)
+  override def withQueryStringParameters(parameters: (String, String)*): WSRequest = WSLimitedRequestAdapter(wsRequest.withQueryStringParameters(parameters:_*), rateLimit)
 
-  override def execute(): Future[WSResponse] = rateLimit.limit(wsRequest.execute)
+  @deprecated
+  override def withQueryString(parameters: (String, String)*): WSRequest = WSLimitedRequestAdapter(wsRequest.withQueryStringParameters(parameters:_*), rateLimit)
+
+  override def execute(): Future[WSResponse] = rateLimit.limit(wsRequest.execute())
 
   override def sign(calc: WSSignatureCalculator): WSRequest =  WSLimitedRequestAdapter(wsRequest.sign(calc), rateLimit)
 
@@ -52,10 +58,6 @@ case class WSLimitedRequestAdapter(wsRequest: WSRequest, rateLimit: RateLimit) e
   override val headers: Map[String, Seq[String]] = wsRequest.headers
 
   override def withRequestFilter(filter: WSRequestFilter): WSRequest = WSLimitedRequestAdapter(wsRequest.withRequestFilter(filter), rateLimit)
-
-  override def withHttpHeaders(headers: (String, String)*): WSRequest = WSLimitedRequestAdapter(wsRequest.withHttpHeaders(headers:_*), rateLimit)
-
-  override def withQueryStringParameters(parameters: (String, String)*): WSRequest = WSLimitedRequestAdapter(wsRequest.withQueryStringParameters(parameters:_*), rateLimit)
 
   override def withCookies(cookie: WSCookie*): WSRequest = WSLimitedRequestAdapter(wsRequest.withCookies(cookie:_*), rateLimit)
 

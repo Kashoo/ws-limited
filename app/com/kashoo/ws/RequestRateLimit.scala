@@ -13,7 +13,7 @@ case class RequestRateLimit(rate: Rate, requestMatcher: RequestMatcher)(implicit
 
 object RequestRateLimit {
 
-  val logger = Logger("request-rate-limit")
+  val logger: Logger = Logger("request-rate-limit")
 
   def apply(rateConfig: Configuration, requestLimitConfig: Configuration)
            (implicit ec: ExecutionContext): RequestRateLimit = {

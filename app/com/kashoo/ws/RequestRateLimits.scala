@@ -46,7 +46,7 @@ object RequestRateLimits {
 
   def apply(config: Configuration, actorSystem: ActorSystem)(implicit ec: ExecutionContext): RequestRateLimits = {
     val rateLimiterEc = config.getOptional[ConfigObject]("ws.limited.execution-context") match {
-      case Some(ecConfig) => actorSystem.dispatchers.lookup("ws.limited.execution-context")
+      case Some(_) => actorSystem.dispatchers.lookup("ws.limited.execution-context")
       case None => ec
     }
     val rateConfig = config.getOptional[Configuration]("ws.limited.rates").getOrElse(throw new IllegalStateException("Could not find configuration for WS rate limits (ws.limited.rates)"))
@@ -99,6 +99,6 @@ object RequestRateLimits {
   private case class UriWrapper(uri: URI) {
     def getHost: String = uri.getHost
     def getPort: Option[Int] = if (uri.getPort == -1) None else Some(uri.getPort)
-    def getPath = Option(uri.getPath)
+    def getPath: Option[String] = Option(uri.getPath)
   }
 }
