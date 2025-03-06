@@ -1,72 +1,72 @@
 package com.kashoo.ws
 
 import org.mockito.Mockito._
-import org.scalatest.{FlatSpec, Matchers}
-import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
+import org.specs2.mock.Mockito
+import org.specs2.specification.Scope
+import play.api.test.PlaySpecification
 
-class RequestMatcherSpec extends FlatSpec with Matchers with MockitoSugar {
+class RequestMatcherSpec extends PlaySpecification with Mockito {
 
-  trait TestScope {
-    val mockConfig = mock[Configuration]
+  class TestScope extends Scope {
+    val mockConfig: Configuration = mock[Configuration]
 
-    def fullVerify = {
+    def fullVerify: Option[String] = {
       verify(mockConfig).getOptional[String]("host")
       verify(mockConfig).getOptional[Int]("port")
       verify(mockConfig).getOptional[String]("path")
     }
   }
 
-  "RequestMatcher" should "instantiate from a full, valid configuration" in new TestScope() {
-    when(mockConfig.getOptional[String]("host")).thenReturn(Some("example.com"))
-    when(mockConfig.getOptional[Int]("port")).thenReturn(Some(9001))
-    when(mockConfig.getOptional[String]("path")).thenReturn(Some("/somepath/somewhere"))
+  "RequestMatcher" should {
+    "instantiate from a full, valid configuration" in new TestScope {
+      when(mockConfig.getOptional[String]("host")).thenReturn(Some("example.com"))
+      when(mockConfig.getOptional[Int]("port")).thenReturn(Some(9001))
+      when(mockConfig.getOptional[String]("path")).thenReturn(Some("/somepath/somewhere"))
 
-    val matcher = RequestMatcher(mockConfig)
+      val matcher = RequestMatcher(mockConfig)
 
-    matcher.host shouldBe "example.com"
-    matcher.port shouldBe Some(9001)
-    matcher.path shouldBe Some("/somepath/somewhere")
+      matcher.host must be_==("example.com")
+      matcher.port must beSome(9001)
+      matcher.path must beSome("/somepath/somewhere")
 
-    fullVerify
-  }
+      fullVerify
+    }
 
-  it should "instantiate from a configuration without a port" in new TestScope() {
-    when(mockConfig.getOptional[String]("host")).thenReturn(Some("example.com"))
-    when(mockConfig.getOptional[Int]("port")).thenReturn(None)
-    when(mockConfig.getOptional[String]("path")).thenReturn(Some("/somepath/somewhere"))
+    "instantiate from a configuration without a port" in new TestScope {
+      when(mockConfig.getOptional[String]("host")).thenReturn(Some("example.com"))
+      when(mockConfig.getOptional[Int]("port")).thenReturn(None)
+      when(mockConfig.getOptional[String]("path")).thenReturn(Some("/somepath/somewhere"))
 
-    val matcher = RequestMatcher(mockConfig)
+      val matcher = RequestMatcher(mockConfig)
 
-    matcher.host shouldBe "example.com"
-    matcher.port shouldBe None
-    matcher.path shouldBe Some("/somepath/somewhere")
+      matcher.host must be_==("example.com")
+      matcher.port must beNone
+      matcher.path must beSome("/somepath/somewhere")
 
-    fullVerify
-  }
+      fullVerify
+    }
 
-  it should "instantiate from a configuration without a path" in new TestScope() {
-    when(mockConfig.getOptional[String]("host")).thenReturn(Some("example.com"))
-    when(mockConfig.getOptional[Int]("port")).thenReturn(Some(9001))
-    when(mockConfig.getOptional[String]("path")).thenReturn(None)
+    "instantiate from a configuration without a path" in new TestScope {
+      when(mockConfig.getOptional[String]("host")).thenReturn(Some("example.com"))
+      when(mockConfig.getOptional[Int]("port")).thenReturn(Some(9001))
+      when(mockConfig.getOptional[String]("path")).thenReturn(None)
 
-    val matcher = RequestMatcher(mockConfig)
+      val matcher = RequestMatcher(mockConfig)
 
-    matcher.host shouldBe "example.com"
-    matcher.port shouldBe Some(9001)
-    matcher.path shouldBe None
+      matcher.host must be_==("example.com")
+      matcher.port must beSome(9001)
+      matcher.path must beNone
 
-    fullVerify
-  }
+      fullVerify
+    }
 
-  it should "not instantiate from a configuration without a host" in new TestScope() {
-    when(mockConfig.getOptional[String]("host")).thenReturn(None)
-    when(mockConfig.getOptional[Int]("port")).thenReturn(Some(9001))
-    when(mockConfig.getOptional[String]("path")).thenReturn(Some("/somepath/somewhere"))
+    "not instantiate from a configuration without a host" in new TestScope {
+      when(mockConfig.getOptional[String]("host")).thenReturn(None)
+      when(mockConfig.getOptional[Int]("port")).thenReturn(Some(9001))
+      when(mockConfig.getOptional[String]("path")).thenReturn(Some("/somepath/somewhere"))
 
-    intercept[IllegalStateException] {
-      RequestMatcher(mockConfig)
+      RequestMatcher(mockConfig) must throwA[IllegalStateException]
     }
   }
-
 }

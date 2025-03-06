@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [5.0.0] - 2025-03-05
+- Upgraded to Play 2.9
+
 ## [4.0.0] - 2020-07-01
 - Upgraded to Scala 2.13 and Play 2.8
 
