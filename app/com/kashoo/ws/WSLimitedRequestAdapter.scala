@@ -100,4 +100,6 @@ case class WSLimitedRequestAdapter(wsRequest: WSRequest, rateLimit: RateLimit) e
   override def stream(): Future[WSResponse] = rateLimit.limit(wsRequest.stream())
 
   override def withUrl(url: String): WSRequest = WSLimitedRequestAdapter(wsRequest.withUrl(url), rateLimit)
+
+  override def withDisableUrlEncoding(disableUrlEncoding: Boolean): WSRequest = WSLimitedRequestAdapter(wsRequest.withDisableUrlEncoding(disableUrlEncoding), rateLimit)
 }

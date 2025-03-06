@@ -1,20 +1,21 @@
 organization := "com.kashoo"
 name := """ws-limited"""
-version := "4.0.0"
+version := "5.0.0"
 description := "Play library offering simple rate limiting of WSClient requests based on application configuration"
 licenses := Seq("MIT License" -> url("https://opensource.org/licenses/MIT"))
 homepage := Some(url("https://github.com/Kashoo/ws-limited"))
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
-scalaVersion := "2.13.3"
+scalaVersion := "2.13.16"
 scalacOptions ++= Seq("-deprecation", "-feature")
 
 libraryDependencies ++= Seq(
-  ws,
   guice,
-  "org.mockito" % "mockito-core" % "1.10.19" % Test,
-  "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test
+  ws,
+  "org.mockito" % "mockito-core" % "1.9.5" % Test,
+  "de.leanovate.play-mockws" %% "play-mockws" % "2.8.1" % Test,
+  specs2 % Test
 )
 
 coverageExcludedPackages := "<empty>;Reverse.*"
